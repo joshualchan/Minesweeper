@@ -6,7 +6,7 @@ public final static int NUM_ROWS = 20;
 public final static int NUM_COLS = 20;
 private MSButton[][] buttons; //2d array of minesweeper buttons
 private ArrayList <MSButton> bombs = new ArrayList <MSButton>(); //ArrayList of just the minesweeper buttons that are mined
-
+public int numBombs = 0;
 void setup ()
 {
     size(400, 400);
@@ -21,34 +21,42 @@ void setup ()
             buttons[r][c] = new MSButton(r,c);
 
     
-    
-    setBombs();
+
+    while(numBombs< (int)(NUM_COLS*NUM_COLS/3))
+    {
+        setBombs();
+        numBombs++;
+    }
+
 }
+
 public void setBombs()
 {
     //your code
-    int row = (int)(Math.random()*20);
-    int col = (int)(Math.random()*20);
-    int numBombs = 0;
+    int row = (int)(Math.random()*NUM_ROWS);
+    int col = (int)(Math.random()*NUM_COLS);
 
+ 
 
 
         if(! bombs.contains(buttons[row][col]))
         {
-            fill(255,0,0);
-            bombs.add(buttons[row][col]);     
-            numBombs++;
-        }  
-        else 
+            bombs.add(buttons[row][col]);     //add element (random button) into bombs
+        }       
+        else
         {
-            bombs.remove(buttons[row][col]);
+            numBombs--;
+            //bombs.remove(buttons[row][col]);
+            bombs.add(buttons[row][col]);
         }
-
-
-        
     
+    
+     
+   
+        System.out.println(bombs.size());
 
 
+          
 
 }
 
@@ -111,8 +119,8 @@ public class MSButton
     {    
         if (marked)
             fill(0);
-        // else if( clicked && bombs.contains(this) ) 
-        //     fill(255,0,0);
+        else if( clicked && bombs.contains(this) ) 
+            fill(255,0,0);
         else if(clicked)
             fill( 200 );
         else 
@@ -129,6 +137,8 @@ public class MSButton
     public boolean isValid(int r, int c)
     {
         //your code here
+        if(! bombs.contains(buttons[r][c]))
+            return true;
         return false;
     }
     public int countBombs(int row, int col)
