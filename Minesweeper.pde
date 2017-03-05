@@ -6,13 +6,16 @@ public final static int NUM_COLS = 20;
 private MSButton[][] buttons; //2d array of minesweeper buttons
 private ArrayList <MSButton> bombs = new ArrayList <MSButton>(); //ArrayList of just the minesweeper buttons that are mined
 public int numBombs = 0;
+public boolean lose = false;
 void setup ()
 {
     size(400, 400);
     textAlign(CENTER,CENTER);
+    lose = false;
     
     // make the manager
     Interactive.make( this );
+
     
     buttons = new MSButton[NUM_ROWS][NUM_COLS];
     for(int r = 0 ; r< NUM_ROWS ; r++)
@@ -21,7 +24,7 @@ void setup ()
 
     
 
-    while(numBombs< (int)(NUM_COLS*NUM_COLS/20))
+    while(numBombs< (int)(NUM_COLS*NUM_COLS/10))
     {
         setBombs();
         numBombs++;
@@ -68,22 +71,53 @@ public boolean isWon()
 {
     for(int r = 0 ; r<NUM_ROWS ; r++)
         for(int c = 0 ; c<NUM_COLS ; c++)
-            if(buttons[r][c].clicked == false &&  bombs.contains(buttons[r][c]))
-                return true;
-    return false;
+            if(bombs.contains(buttons[r][c]) && buttons[r][c].marked == false )
+                return false;
+    return true;
 }
 public void displayLosingMessage()
 {
     for(int r = 0 ; r<NUM_ROWS ; r++)
         for(int c = 0 ; c<NUM_COLS ; c++)
+            if(bombs.contains(buttons[r][c]))
+                buttons[r][c].clicked = true;
 
-    if(bombs.contains(buttons[r][c]))
-        buttons[r][c].clicked = true;
+    int r = 9;
+    int c = 6;
+    String [] losingMessage = {"Y", "O", "U", " ", "L", "O", "S","E"};
+    for(int i = 0 ; i<losingMessage.length ; i++)
+ 
+        {
+            fill(0);
+            textSize(15);
+            buttons[r][c].setLabel(losingMessage[i]);
+            c++;
+        }
 
 }
 public void displayWinningMessage()
 {
-    background(0);
+    int r = 9;
+    int c = 7;
+    String [] winningMessage = {"Y", "O", "U", " ", "W", "I", "N"};
+    for(int i = 0 ; i<winningMessage.length ; i++)
+ 
+        {
+            fill(0);
+            textSize(15);
+            buttons[r][c].setLabel(winningMessage[i]);
+            c++;
+        }
+}
+
+public void keyPressed()
+{
+
+        numBombs = 0;
+        setup();
+
+    
+
 }
 
 public class MSButton
@@ -134,7 +168,11 @@ public class MSButton
         else //if mouseButton is left
         {
              if(bombs.contains(this))
-            displayLosingMessage();
+             {
+                displayLosingMessage();
+                lose = true;
+             }
+
         else if(countBombs(r,c)>0)
             setLabel("" + countBombs(r,c));
         else 
@@ -168,7 +206,10 @@ public class MSButton
         }
 
         
- 
+    if(isWon())
+    {
+        redraw();
+    }
     
     }
 
